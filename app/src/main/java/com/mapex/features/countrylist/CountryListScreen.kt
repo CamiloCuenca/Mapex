@@ -1,124 +1,133 @@
 package com.mapex.features.countrylist
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.mapex.domain.model.Country
+import com.mapex.ui.components.ShimmerBox
+import java.text.NumberFormat
+import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CountryListScreen(
     viewModel: CountryListViewModel,
     onCountrySelected: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    var showRegionMenu by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
     ) {
-        // Título
-        Text(
-            text = "Países del Mundo",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        Spacer(Modifier.height(8.dp))
 
-        // Búsqueda por nombre
+        // M3 SearchBar-style OutlinedTextField with large rounded corners
         OutlinedTextField(
             value = state.searchQuery,
             onValueChange = { viewModel.searchByName(it) },
-            label = { Text("Buscar por nombre") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+            placeholder = { Text("Buscar país…") },
+            leadingIcon = {
+                Icon(
+                    Icons.Default.Search,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 12.dp),
-            shape = RoundedCornerShape(8.dp)
+                .padding(bottom = 8.dp),
+            shape = RoundedCornerShape(28.dp),  // M3 extra-large radius
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline
+            )
         )
 
-        // Filtro por región
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Box(modifier = Modifier.weight(1f)) {
-                Button(
-                    onClick = { showRegionMenu = !showRegionMenu },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        if (state.selectedRegion.isEmpty()) "Seleccionar Región"
-                        else state.selectedRegion
-                    )
-                }
-                DropdownMenu(
-                    expanded = showRegionMenu,
-                    onDismissRequest = { showRegionMenu = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text("Todas") },
-                        onClick = {
-                            viewModel.filterByRegion("")
-                            showRegionMenu = false
-                        }
-                    )
-                    state.allRegions.forEach { region ->
-                        DropdownMenuItem(
-                            text = { Text(region) },
-                            onClick = {
-                                viewModel.filterByRegion(region)
-                                showRegionMenu = false
-                            }
+        // M3 FilterChip row for region selection
+        if (state.allRegions.isNotEmpty()) {
+            val allRegions = remember(state.allRegions) {
+                listOf("") + state.allRegions   // "" = "Todas"
+            }
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(bottom = 12.dp)
+            ) {
+                items(allRegions) { region ->
+                    val selected = state.selectedRegion == region
+                    FilterChip(
+                        selected = selected,
+                        onClick = { viewModel.filterByRegion(region) },
+                        label = { Text(if (region.isEmpty()) "Todas" else region) },
+                        // M3 medium radius for chips
+                        shape = RoundedCornerShape(8.dp),
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer
                         )
-                    }
+                    )
                 }
             }
         }
 
-        // Estado de carga
         when {
             state.isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+                // Skeleton loading list
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    items(8) {
+                        CountrySkeletonItem()
+                    }
                 }
             }
 
@@ -129,11 +138,17 @@ fun CountryListScreen(
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
-                            text = "Error: ${state.error}",
+                            text = "No se pudo cargar la lista de países.",
+                            style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.error
+                        )
+                        Text(
+                            text = state.error!!,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Button(onClick = { viewModel.searchByName("") }) {
                             Text("Reintentar")
@@ -147,79 +162,199 @@ fun CountryListScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("No se encontraron países")
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            "No se encontraron países",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 
             else -> {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     items(state.filteredCountries) { country ->
                         CountryListItem(
                             country = country,
                             onClick = { onCountrySelected(country.codeAlpha2) }
                         )
                     }
+                    item { Spacer(Modifier.height(8.dp)) }
                 }
             }
         }
     }
 }
+
+// ── List card ────────────────────────────────────────────────────────────────
 
 @Composable
 fun CountryListItem(
     country: Country,
     onClick: () -> Unit
 ) {
-    Card(
+    // M3 ElevatedCard with large corner radius (16 dp)
+    ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // Flag
-            if (country.flags != null) {
-                AsyncImage(
-                    model = country.flags,
-                    contentDescription = "Bandera de ${country.commonName}",
-                    modifier = Modifier.size(50.dp)
-                )
-            } else {
-                Box(
-                    modifier = Modifier.size(50.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("🏳️")
-                }
-            }
+            // Flag with shimmer skeleton loading and crossfade
+            FlagImage(
+                url = country.flags,
+                description = "Bandera de ${country.commonName}",
+                modifier = Modifier
+                    .size(width = 68.dp, height = 46.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
 
-            // Información del país
+            // Country info
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = country.commonName,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    text = country.region,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = "Cap: ${country.capital.joinToString(", ")}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                if (country.capital.isNotEmpty()) {
+                    Text(
+                        text = country.capital.first(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                if (country.continents.isNotEmpty()) {
+                    Text(
+                        text = country.continents.joinToString(" · "),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                } else if (country.region.isNotBlank() && country.region != "N/A") {
+                    Text(
+                        text = country.region,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            // Population chip
+            if (country.population > 0) {
+                Card(
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                    )
+                ) {
+                    Text(
+                        text = formatPopulationShort(country.population),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
             }
         }
     }
 }
+
+// ── Skeleton placeholder ──────────────────────────────────────────────────────
+
+@Composable
+private fun CountrySkeletonItem() {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            ShimmerBox(
+                modifier = Modifier
+                    .size(width = 68.dp, height = 46.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                ShimmerBox(modifier = Modifier.fillMaxWidth(0.65f).height(14.dp))
+                ShimmerBox(modifier = Modifier.fillMaxWidth(0.45f).height(10.dp))
+                ShimmerBox(modifier = Modifier.fillMaxWidth(0.30f).height(9.dp))
+            }
+        }
+    }
+}
+
+// ── Flag image helper ─────────────────────────────────────────────────────────
+
+@Composable
+fun FlagImage(
+    url: String?,
+    description: String,
+    modifier: Modifier = Modifier
+) {
+    if (url == null) {
+        Box(
+            modifier = modifier.background(
+                MaterialTheme.colorScheme.surfaceVariant,
+                RoundedCornerShape(8.dp)
+            ),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("🏳️", style = MaterialTheme.typography.titleLarge)
+        }
+        return
+    }
+
+    val painter = rememberAsyncImagePainter(model = url)
+    val painterState = painter.state
+
+    Box(modifier = modifier) {
+        if (painterState is AsyncImagePainter.State.Loading ||
+            painterState is AsyncImagePainter.State.Empty
+        ) {
+            ShimmerBox(modifier = Modifier.matchParentSize())
+        } else {
+            androidx.compose.foundation.Image(
+                painter = painter,
+                contentDescription = description,
+                modifier = Modifier.matchParentSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+    }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+private fun formatPopulationShort(population: Int): String = when {
+    population >= 1_000_000_000 -> "${population / 1_000_000_000}B"
+    population >= 1_000_000 -> "${population / 1_000_000}M"
+    population >= 1_000 -> "${population / 1_000}K"
+    else -> population.toString()
+}
+
