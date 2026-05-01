@@ -39,6 +39,15 @@ object CountryRepositoryImpl : CountryRepository {
         val resolvedCodeAlpha2 = codeAlpha2 ?: ""
         val resolvedCodeAlpha3 = codeAlpha3 ?: resolvedCodeAlpha2.ifBlank { name.common }
 
+        // Build international dialing code from root + first suffix
+        val callingCode = idd?.root?.let { root ->
+            val suffix = idd.suffixes?.firstOrNull() ?: ""
+            "$root$suffix"
+        }
+
+        // Extract the most recent gini value (highest year key)
+        val latestGini = gini?.entries?.maxByOrNull { it.key }?.value
+
         return Country(
             id = resolvedCodeAlpha3,
             commonName = name.common,
@@ -50,11 +59,22 @@ object CountryRepositoryImpl : CountryRepository {
             area = area,
             timezones = timezones ?: emptyList(),
             languages = languages?.values?.toList() ?: emptyList(),
-            currencies = currencies?.values?.map { it.name } ?: emptyList(),
+            currencies = currencies?.values?.map { "${it.name}${it.symbol?.let { s -> " ($s)" } ?: ""}" }
+                ?: emptyList(),
             flags = flags?.svg ?: flags?.png,
             codeAlpha2 = resolvedCodeAlpha2,
-            codeAlpha3 = resolvedCodeAlpha3
+            codeAlpha3 = resolvedCodeAlpha3,
+            coatOfArms = coatOfArms?.svg ?: coatOfArms?.png,
+            borders = borders ?: emptyList(),
+            tld = tld ?: emptyList(),
+            callingCode = callingCode,
+            googleMapsUrl = maps?.googleMaps,
+            latlng = latlng ?: emptyList(),
+            landlocked = landlocked ?: false,
+            gini = latestGini,
+            carSide = car?.side,
+            startOfWeek = startOfWeek,
+            continents = continents ?: emptyList()
         )
     }
 }
-

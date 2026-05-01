@@ -7,21 +7,24 @@ sealed class MainRoutes(
 ) {
     data object Home : MainRoutes(
         route = "home",
-        title = "Home",
+        title = "Inicio",
         shortLabel = "H",
     )
 
     data object DetailCountries : MainRoutes(
         route = "detail_countries",
-        title = "Detail Countries",
-        shortLabel = "D",
+        title = "Países",
+        shortLabel = "P",
     )
 
     companion object {
         val bottomItems = listOf(Home, DetailCountries)
 
-        fun fromRoute(route: String?): MainRoutes = when (route) {
-            DetailCountries.route -> DetailCountries
+        fun fromRoute(route: String?): MainRoutes = when {
+            route == DetailCountries.route ||
+                    route == "countries" ||
+                    route?.startsWith("country_detail") == true -> DetailCountries
+
             else -> Home
         }
     }
