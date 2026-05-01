@@ -50,8 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
 import com.mapex.domain.model.Country
 import com.mapex.ui.components.ShimmerBox
 import java.text.NumberFormat
@@ -95,21 +94,21 @@ fun CountryListScreen(
             )
         )
 
-        // M3 FilterChip row for region selection
-        if (state.allRegions.isNotEmpty()) {
-            val allRegions = remember(state.allRegions) {
-                listOf("") + state.allRegions   // "" = "Todas"
+        // M3 FilterChip row for continent selection
+        if (state.allContinents.isNotEmpty()) {
+            val allContinents = remember(state.allContinents) {
+                listOf("") + state.allContinents   // "" = "Todos"
             }
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(bottom = 12.dp)
             ) {
-                items(allRegions) { region ->
-                    val selected = state.selectedRegion == region
+                items(allContinents) { continent ->
+                    val selected = state.selectedContinent == continent
                     FilterChip(
                         selected = selected,
-                        onClick = { viewModel.filterByRegion(region) },
-                        label = { Text(if (region.isEmpty()) "Todas" else region) },
+                        onClick = { viewModel.filterByContinent(continent) },
+                        label = { Text(if (continent.isEmpty()) "Todos" else continent) },
                         // M3 medium radius for chips
                         shape = RoundedCornerShape(8.dp),
                         colors = FilterChipDefaults.filterChipColors(
@@ -150,7 +149,7 @@ fun CountryListScreen(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Button(onClick = { viewModel.searchByName("") }) {
+                        Button(onClick = { viewModel.reloadCountries() }) {
                             Text("Reintentar")
                         }
                     }
@@ -317,36 +316,38 @@ fun FlagImage(
     description: String,
     modifier: Modifier = Modifier
 ) {
-    if (url == null) {
+    @Composable
+    fun Placeholder() {
         Box(
-            modifier = modifier.background(
-                MaterialTheme.colorScheme.surfaceVariant,
-                RoundedCornerShape(8.dp)
-            ),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    MaterialTheme.colorScheme.surfaceVariant,
+                    RoundedCornerShape(8.dp)
+                ),
             contentAlignment = Alignment.Center
         ) {
             Text("🏳️", style = MaterialTheme.typography.titleLarge)
         }
+    }
+
+    if (url == null) {
+        Box(modifier = modifier) { Placeholder() }
         return
     }
 
-    val painter = rememberAsyncImagePainter(model = url)
-    val painterState = painter.state
-
-    Box(modifier = modifier) {
-        if (painterState is AsyncImagePainter.State.Loading ||
-            painterState is AsyncImagePainter.State.Empty
-        ) {
+    SubcomposeAsyncImage(
+        model = url,
+        contentDescription = description,
+        modifier = modifier,
+        contentScale = ContentScale.Crop,
+        loading = {
             ShimmerBox(modifier = Modifier.matchParentSize())
-        } else {
-            androidx.compose.foundation.Image(
-                painter = painter,
-                contentDescription = description,
-                modifier = Modifier.matchParentSize(),
-                contentScale = ContentScale.Crop
-            )
+        },
+        error = {
+            Placeholder()
         }
-    }
+    )
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -357,4 +358,6 @@ private fun formatPopulationShort(population: Int): String = when {
     population >= 1_000 -> "${population / 1_000}K"
     else -> population.toString()
 }
+
+
 

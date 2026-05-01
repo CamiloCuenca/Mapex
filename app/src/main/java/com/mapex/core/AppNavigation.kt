@@ -2,13 +2,7 @@ package com.mapex.core
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -36,7 +30,6 @@ fun AppNavigation() {
     val currentRoute = navBackStackEntry?.destination?.route
     val currentScreen = MainRoutes.fromRoute(currentRoute)
 
-    // Hide the shared TopAppBar on detail screen which has its own TopAppBar
     val showTopBar = currentRoute != "country_detail/{countryCode}"
 
     Scaffold(
@@ -46,56 +39,12 @@ fun AppNavigation() {
                 TopAppBar(
                     title = { Text(text = currentScreen.title) },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        // M3 surface container high for the bar background
                         containerColor = androidx.compose.material3.MaterialTheme
                             .colorScheme.surfaceContainerHigh
                     )
                 )
             }
-        },
-        bottomBar = {
-            NavigationBar {
-                MainRoutes.bottomItems.forEach { screen ->
-                    val selected = when {
-                        screen == MainRoutes.DetailCountries &&
-                                (currentRoute == screen.route || currentRoute == "countries" ||
-                                        currentRoute == "country_detail/{countryCode}") -> true
-
-                        else -> currentRoute == screen.route
-                    }
-
-                    NavigationBarItem(
-                        selected = selected,
-                        onClick = {
-                            if (!selected) {
-                                navController.navigate(screen.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            }
-                        },
-                        icon = {
-                            // M3 NavigationBarItem with real vector icons
-                            when (screen) {
-                                MainRoutes.Home -> Icon(
-                                    Icons.Default.Home,
-                                    contentDescription = screen.title
-                                )
-
-                                MainRoutes.DetailCountries -> Icon(
-                                    Icons.Default.Map,
-                                    contentDescription = screen.title
-                                )
-                            }
-                        },
-                        label = { Text(screen.title) },
-                    )
-                }
-            }
-        },
+        }
     ) { innerPadding ->
         NavHost(
             navController = navController,
@@ -116,7 +65,6 @@ fun AppNavigation() {
                 )
             }
 
-            // DetailCountries tab now shows the country list directly
             composable(MainRoutes.DetailCountries.route) {
                 val viewModel = CountryListViewModel(CountryRepositoryImpl)
                 CountryListScreen(
@@ -138,4 +86,3 @@ fun AppNavigation() {
         }
     }
 }
-

@@ -1,6 +1,5 @@
 package com.mapex.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -9,35 +8,53 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = BluePrimaryDark,
+    onPrimary = TextPrimaryDark,
+    primaryContainer = Color(0xFF1D4ED8),
+    onPrimaryContainer = TextPrimaryDark,
+    secondary = GreenSecondaryDark,
+    onSecondary = TextPrimaryDark,
+    secondaryContainer = Color(0xFF065F46),
+    onSecondaryContainer = TextPrimaryDark,
+    tertiary = BluePrimaryDark,
+    background = BackgroundDark,
+    onBackground = TextPrimaryDark,
+    surface = SurfaceDark,
+    onSurface = TextPrimaryDark,
+    surfaceVariant = Color(0xFF374151),
+    onSurfaceVariant = TextSecondaryDark,
+    outline = Color(0xFF4B5563)
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+    primary = BluePrimary,
     onPrimary = Color.White,
+    primaryContainer = BlueLight,
+    onPrimaryContainer = TextPrimary,
+    secondary = GreenSecondary,
     onSecondary = Color.White,
+    secondaryContainer = GreenLight,
+    onSecondaryContainer = TextPrimary,
+    tertiary = MarkerRed,
     onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    background = BackgroundLight,
+    onBackground = TextPrimary,
+    surface = SurfaceLight,
+    onSurface = TextPrimary,
+    surfaceVariant = Color(0xFFE5E7EB),
+    onSurfaceVariant = TextSecondary,
+    outline = Color(0xFFD1D5DB)
 )
 
 @Composable
 fun MapexTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
