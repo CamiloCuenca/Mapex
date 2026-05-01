@@ -1,17 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlinx.serialization)
-
 }
 
 android {
     namespace = "com.mapex"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.mapex"
@@ -35,6 +31,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -61,5 +60,16 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation("com.airbnb.android:lottie-compose:6.4.0")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    
+    // Hilt - commented out for now
+    // implementation(libs.hilt.android)
+    // ksp(libs.hilt.compiler)
+    // implementation(libs.androidx.hilt.navigation.compose)
+    
+    // Coil for image loading
+    implementation(libs.coil.compose)
 }

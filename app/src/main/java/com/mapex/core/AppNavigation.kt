@@ -16,6 +16,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.mapex.data.repository.CountryRepositoryImpl
+import com.mapex.features.countrydetail.CountryDetailScreen
+import com.mapex.features.countrydetail.CountryDetailViewModel
+import com.mapex.features.countrylist.CountryListScreen
+import com.mapex.features.countrylist.CountryListViewModel
 import com.mapex.ui.theme.Screens.DetailCountriesScreen
 import com.mapex.ui.theme.Screens.HomeScreen
 
@@ -65,11 +70,34 @@ fun AppNavigation() {
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(MainRoutes.Home.route) {
-                HomeScreen()
+                HomeScreen(
+                    onNavigateToCountries = {
+                        navController.navigate("countries")
+                    }
+                )
             }
 
             composable(MainRoutes.DetailCountries.route) {
                 DetailCountriesScreen()
+            }
+
+            composable("countries") {
+                val viewModel = CountryListViewModel(CountryRepositoryImpl)
+                CountryListScreen(
+                    viewModel = viewModel,
+                    onCountrySelected = { countryCode ->
+                        navController.navigate("country_detail/$countryCode")
+                    }
+                )
+            }
+
+            composable("country_detail/{countryCode}") { backStackEntry ->
+                val countryCode = backStackEntry.arguments?.getString("countryCode")
+                val viewModel = CountryDetailViewModel(CountryRepositoryImpl, countryCode)
+                CountryDetailScreen(
+                    viewModel = viewModel,
+                    onBackClick = { navController.popBackStack() }
+                )
             }
         }
     }
