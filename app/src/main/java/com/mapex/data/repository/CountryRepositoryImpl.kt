@@ -61,7 +61,7 @@ object CountryRepositoryImpl : CountryRepository {
             languages = languages?.values?.toList() ?: emptyList(),
             currencies = currencies?.values?.map { "${it.name}${it.symbol?.let { s -> " ($s)" } ?: ""}" }
                 ?: emptyList(),
-            flags = flags?.svg ?: flags?.png,
+            flags = flags?.png ?: flags?.svg,
             codeAlpha2 = resolvedCodeAlpha2,
             codeAlpha3 = resolvedCodeAlpha3,
             coatOfArms = coatOfArms?.svg ?: coatOfArms?.png,

@@ -327,19 +327,6 @@ fun CountryDetailContent(
             }
         }
 
-        // ── Coat of arms ──────────────────────────────────────────────────
-        if (!country.coatOfArms.isNullOrBlank()) {
-            DetailCard(title = "Escudo de Armas") {
-                FlagImage(
-                    url = country.coatOfArms,
-                    description = "Escudo de ${country.commonName}",
-                    modifier = Modifier
-                        .size(width = 100.dp, height = 120.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .align(Alignment.CenterHorizontally)
-                )
-            }
-        }
 
         Spacer(Modifier.height(16.dp))
     }
