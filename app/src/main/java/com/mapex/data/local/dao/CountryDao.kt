@@ -11,6 +11,8 @@ import com.mapex.data.local.entity.ContriesEntity
 import com.mapex.data.local.entity.PaisDetalleEntity
 import kotlinx.coroutines.flow.Flow
 
+import androidx.paging.PagingSource
+
 @Dao
 interface CountryDao {
 
@@ -19,6 +21,12 @@ interface CountryDao {
 
     @Query("SELECT * FROM contries ORDER BY nombre_comun ASC")
     fun getAllCountries(): Flow<List<ContriesEntity>>
+
+    @Query("SELECT * FROM contries ORDER BY nombre_comun ASC")
+    fun getPagedCountries(): PagingSource<Int, ContriesEntity>
+
+    @Query("SELECT * FROM contries WHERE nombre_comun LIKE :query OR id_contries LIKE :query ORDER BY nombre_comun ASC")
+    fun searchPagedCountries(query: String): PagingSource<Int, ContriesEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCountryDetail(detail: PaisDetalleEntity)

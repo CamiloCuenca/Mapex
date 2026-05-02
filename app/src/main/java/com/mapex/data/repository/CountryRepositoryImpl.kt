@@ -5,12 +5,37 @@ import com.mapex.data.remote.RetrofitClient
 import com.mapex.data.remote.dto.CountryDTO
 import com.mapex.domain.model.Country
 import com.mapex.domain.repository.CountryRepository
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.supervisorScope
 
 class CountryRepositoryImpl(
     private val countryDao: CountryDao
 ) : CountryRepository {
+
+    override fun getPagedCountries(searchQuery: String): Flow<PagingData<Country>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false,
+                initialLoadSize = 40
+            ),
+            pagingSourceFactory = {
+                if (searchQuery.isBlank()) {
+                    countryDao.getPagedCountries()
+                } else {
+                    countryDao.searchPagedCountries("%$searchQuery%")
+                }
+            }
+        ).flow.map { pagingData ->
+            pagingData.map { it.toDomain() }
+        }
+    }
 
     override suspend fun getAllCountries(): Result<List<Country>> {
         return try {
