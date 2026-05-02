@@ -23,6 +23,7 @@ import com.mapex.features.countrydetail.CountryDetailScreen
 import com.mapex.features.countrydetail.CountryDetailViewModel
 import com.mapex.features.countrylist.CountryListScreen
 import com.mapex.features.countrylist.CountryListViewModel
+import com.mapex.ui.components.ConnectionStatusIndicator
 import com.mapex.ui.theme.Screens.HomeScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,6 +46,9 @@ fun AppNavigation() {
             if (showTopBar) {
                 TopAppBar(
                     title = { Text(text = currentScreen.title) },
+                    actions = {
+                        ConnectionStatusIndicator()
+                    },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = androidx.compose.material3.MaterialTheme
                             .colorScheme.surfaceContainerHigh
