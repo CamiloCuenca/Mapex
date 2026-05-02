@@ -51,6 +51,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.SubcomposeAsyncImage
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.mapex.domain.model.Country
 import com.mapex.ui.components.ShimmerBox
 import java.text.NumberFormat
@@ -63,6 +65,7 @@ fun CountryListScreen(
     onCountrySelected: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val pagedCountries = viewModel.pagedCountries.collectAsLazyPagingItems()
 
     Column(
         modifier = Modifier
@@ -121,16 +124,30 @@ fun CountryListScreen(
         }
 
         when {
-            state.isLoading -> {
-                // Skeleton loading list
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    items(8) {
-                        CountrySkeletonItem()
+            state.isLoading && pagedCountries.itemCount == 0 -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(48.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                            strokeWidth = 4.dp
+                        )
+                        Text(
+                            text = "Sincronizando países...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             }
 
-            state.error != null -> {
+            state.error != null && pagedCountries.itemCount == 0 -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -156,7 +173,7 @@ fun CountryListScreen(
                 }
             }
 
-            state.filteredCountries.isEmpty() -> {
+            pagedCountries.itemCount == 0 -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -176,11 +193,17 @@ fun CountryListScreen(
 
             else -> {
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    items(state.filteredCountries) { country ->
-                        CountryListItem(
-                            country = country,
-                            onClick = { onCountrySelected(country.codeAlpha2) }
-                        )
+                    items(
+                        count = pagedCountries.itemCount,
+                        key = pagedCountries.itemKey { it.id }
+                    ) { index ->
+                        val country = pagedCountries[index]
+                        if (country != null) {
+                            CountryListItem(
+                                country = country,
+                                onClick = { onCountrySelected(country.id) }
+                            )
+                        }
                     }
                     item { Spacer(Modifier.height(8.dp)) }
                 }
@@ -188,6 +211,7 @@ fun CountryListScreen(
         }
     }
 }
+
 
 // ── List card ────────────────────────────────────────────────────────────────
 
