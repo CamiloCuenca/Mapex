@@ -9,12 +9,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.mapex.data.local.AppDatabase
 import com.mapex.data.repository.CountryRepositoryImpl
 import com.mapex.features.countrydetail.CountryDetailScreen
 import com.mapex.features.countrydetail.CountryDetailViewModel
@@ -25,6 +28,10 @@ import com.mapex.ui.theme.Screens.HomeScreen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigation() {
+    val context = LocalContext.current
+    val database = remember { AppDatabase.getDatabase(context) }
+    val repository = remember { CountryRepositoryImpl(database.countryDao()) }
+
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -66,7 +73,7 @@ fun AppNavigation() {
             }
 
             composable(MainRoutes.DetailCountries.route) {
-                val viewModel = CountryListViewModel(CountryRepositoryImpl)
+                val viewModel = CountryListViewModel(repository)
                 CountryListScreen(
                     viewModel = viewModel,
                     onCountrySelected = { countryCode ->
@@ -77,7 +84,7 @@ fun AppNavigation() {
 
             composable("country_detail/{countryCode}") { backStackEntry ->
                 val countryCode = backStackEntry.arguments?.getString("countryCode")
-                val viewModel = CountryDetailViewModel(CountryRepositoryImpl, countryCode)
+                val viewModel = CountryDetailViewModel(repository, countryCode)
                 CountryDetailScreen(
                     viewModel = viewModel,
                     onBackClick = { navController.popBackStack() }

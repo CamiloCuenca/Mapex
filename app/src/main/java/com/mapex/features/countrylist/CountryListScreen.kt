@@ -122,10 +122,24 @@ fun CountryListScreen(
 
         when {
             state.isLoading -> {
-                // Skeleton loading list
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    items(8) {
-                        CountrySkeletonItem()
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(48.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                            strokeWidth = 4.dp
+                        )
+                        Text(
+                            text = "Sincronizando países...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             }
@@ -179,7 +193,7 @@ fun CountryListScreen(
                     items(state.filteredCountries) { country ->
                         CountryListItem(
                             country = country,
-                            onClick = { onCountrySelected(country.codeAlpha2) }
+                            onClick = { onCountrySelected(country.id) }
                         )
                     }
                     item { Spacer(Modifier.height(8.dp)) }
