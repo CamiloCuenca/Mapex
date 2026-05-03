@@ -72,6 +72,7 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import coil.compose.SubcomposeAsyncImage
 import com.mapex.R
@@ -361,6 +362,24 @@ fun CountryListScreen(
                                     country = country,
                                     onClick = { onCountrySelected(country.id) }
                                 )
+                            }
+                        }
+                        
+                        // Indicador de "Cargando más" para el scroll infinito
+                        if (pagedCountries.loadState.append is androidx.paging.LoadState.Loading) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        color = MaterialTheme.colorScheme.tertiary,
+                                        strokeWidth = 2.dp
+                                    )
+                                }
                             }
                         }
                     }
