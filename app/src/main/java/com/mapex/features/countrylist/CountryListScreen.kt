@@ -523,7 +523,7 @@ fun CountryListItem(
                 modifier = Modifier
                     .width(4.dp)
                     .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.tertiary)
+                    .background(MaterialTheme.colorScheme.primary)
             )
             
             Spacer(Modifier.width(12.dp))

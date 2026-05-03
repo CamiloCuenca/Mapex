@@ -154,8 +154,8 @@ fun HomeScreen(onNavigateToCountries: (() -> Unit)? = null) {
                     .height(64.dp)
                     .clip(CircleShape),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-                    contentColor = Color.Black
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White
                 ),
                 elevation = ButtonDefaults.buttonElevation(
                     defaultElevation = 8.dp,
