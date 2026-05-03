@@ -8,52 +8,77 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = BluePrimaryDark,
-    onPrimary = TextPrimaryDark,
-    primaryContainer = Color(0xFF1D4ED8),
-    onPrimaryContainer = TextPrimaryDark,
-    secondary = GreenSecondaryDark,
-    onSecondary = TextPrimaryDark,
-    secondaryContainer = Color(0xFF065F46),
-    onSecondaryContainer = TextPrimaryDark,
-    tertiary = BluePrimaryDark,
-    background = BackgroundDark,
-    onBackground = TextPrimaryDark,
-    surface = SurfaceDark,
-    onSurface = TextPrimaryDark,
-    surfaceVariant = Color(0xFF374151),
-    onSurfaceVariant = TextSecondaryDark,
-    outline = Color(0xFF4B5563)
+    // Acciones principales y enlaces
+    primary = BrandBlue,
+    onPrimary = TextWhite,
+    primaryContainer = BrandBlueContainer,
+    onPrimaryContainer = TextWhite,
+
+    // Acciones secundarias
+    secondary = BrandBlueHover,
+    onSecondary = TextWhite,
+    secondaryContainer = BrandBlueContainer,
+    onSecondaryContainer = TextWhite,
+
+    // Verde fosforescente (usado con moderación: focus, resaltados sutiles)
+    tertiary = BrandGreen,
+    onTertiary = BrandBlack,
+    tertiaryContainer = BrandGreenContainer,
+    onTertiaryContainer = TextWhite,
+
+    // Color primario: Negro (fondos principales y estructurales)
+    background = BackgroundBlack,
+    onBackground = TextWhite,
+    surface = SurfaceBlack,
+    onSurface = TextWhite,
+    surfaceVariant = SurfaceVariantBlack,
+    onSurfaceVariant = TextGray,
+
+    // Detalles de borde y estados
+    outline = OutlineDark,
+    outlineVariant = BrandGreenMuted // Usado para focus y bordes sutiles
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = BluePrimary,
-    onPrimary = Color.White,
-    primaryContainer = BlueLight,
-    onPrimaryContainer = TextPrimary,
-    secondary = GreenSecondary,
-    onSecondary = Color.White,
-    secondaryContainer = GreenLight,
-    onSecondaryContainer = TextPrimary,
-    tertiary = MarkerRed,
-    onTertiary = Color.White,
+    // Acciones principales y enlaces
+    primary = BrandBlue,
+    onPrimary = TextWhite,
+    primaryContainer = BrandBlueHover,
+    onPrimaryContainer = TextWhite,
+
+    // Acciones secundarias
+    secondary = BrandBlue,
+    onSecondary = TextWhite,
+    secondaryContainer = BrandBlueContainer,
+    onSecondaryContainer = TextWhite,
+
+    // Verde fosforescente adaptado para contraste en tema claro
+    tertiary = BrandGreenMuted, 
+    onTertiary = TextWhite,
+    tertiaryContainer = BrandGreenContainer,
+    onTertiaryContainer = TextWhite,
+
+    // Estructurales en tema claro
     background = BackgroundLight,
-    onBackground = TextPrimary,
+    onBackground = TextBlack,
     surface = SurfaceLight,
-    onSurface = TextPrimary,
-    surfaceVariant = Color(0xFFE5E7EB),
-    onSurfaceVariant = TextSecondary,
-    outline = Color(0xFFD1D5DB)
+    onSurface = TextBlack,
+    surfaceVariant = OutlineLight,
+    onSurfaceVariant = TextDarkGray,
+
+    outline = OutlineLight,
+    outlineVariant = BrandGreenMuted
 )
 
 @Composable
 fun MapexTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
+    // Forzamos el tema oscuro por defecto para garantizar que el "Color primario: negro"
+    // se aplique siempre a los fondos principales, tal como dicta la identidad visual.
+    darkTheme: Boolean = true,
+    // Dynamic color is disabled by default to enforce the brand identity
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
