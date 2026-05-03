@@ -8,6 +8,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
@@ -46,39 +47,42 @@ private val LightColorScheme = lightColorScheme(
     // Acciones principales y enlaces
     primary = BrandBlue,
     onPrimary = TextWhite,
-    primaryContainer = BrandBlueHover,
-    onPrimaryContainer = TextWhite,
+    primaryContainer = Color(0xFFD6E4FF),
+    onPrimaryContainer = Color(0xFF00337A),
 
     // Acciones secundarias
     secondary = BrandBlue,
     onSecondary = TextWhite,
-    secondaryContainer = BrandBlueContainer,
-    onSecondaryContainer = TextWhite,
+    secondaryContainer = Color(0xFFD6E4FF),
+    onSecondaryContainer = Color(0xFF00337A),
 
-    // Verde fosforescente adaptado para contraste en tema claro
-    tertiary = BrandGreenMuted, 
+    // Verde adaptado para tema claro (suficiente contraste)
+    tertiary = BrandGreenMuted,
     onTertiary = TextWhite,
-    tertiaryContainer = BrandGreenContainer,
-    onTertiaryContainer = TextWhite,
+    tertiaryContainer = Color(0xFFB8F5D0),
+    onTertiaryContainer = Color(0xFF003918),
 
-    // Estructurales en tema claro
+    // Fondos y superficies claras
     background = BackgroundLight,
     onBackground = TextBlack,
     surface = SurfaceLight,
     onSurface = TextBlack,
-    surfaceVariant = OutlineLight,
+    surfaceVariant = Color(0xFFEAEAF0),
     onSurfaceVariant = TextDarkGray,
 
-    outline = OutlineLight,
-    outlineVariant = BrandGreenMuted
+    outline = Color(0xFFB0B0BA),
+    outlineVariant = Color(0xFFD4D4DC),
+    error = Color(0xFFBA1A1A),
+    onError = TextWhite,
+    errorContainer = Color(0xFFFFDAD6),
+    onErrorContainer = Color(0xFF410002)
 )
 
 @Composable
 fun MapexTheme(
-    // Forzamos el tema oscuro por defecto para garantizar que el "Color primario: negro"
-    // se aplique siempre a los fondos principales, tal como dicta la identidad visual.
-    darkTheme: Boolean = true,
-    // Dynamic color is disabled by default to enforce the brand identity
+    // Sigue la preferencia del sistema (dark/light)
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    // Dynamic color is disabled to enforce the brand identity
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
