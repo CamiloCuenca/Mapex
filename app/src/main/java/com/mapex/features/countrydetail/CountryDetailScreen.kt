@@ -209,7 +209,7 @@ fun CountryDetailContent(
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 0.2.em,
-                color = MaterialTheme.colorScheme.tertiary,
+                color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 4.dp)
             )
@@ -364,7 +364,7 @@ private fun DetailSection(
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Black,
                 letterSpacing = 0.1.em,
-                color = MaterialTheme.colorScheme.tertiary, // Verde fosforescente
+                color = MaterialTheme.colorScheme.primary, // Azul en cualquier tema
                 modifier = Modifier.padding(bottom = 16.dp)
             )
             content()

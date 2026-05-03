@@ -56,7 +56,7 @@ private val LightColorScheme = lightColorScheme(
     secondaryContainer = Color(0xFFD6E4FF),
     onSecondaryContainer = Color(0xFF00337A),
 
-    // Verde adaptado para tema claro (suficiente contraste)
+    // Verde muted adaptado para tema claro (contraste accesible)
     tertiary = BrandGreenMuted,
     onTertiary = TextWhite,
     tertiaryContainer = Color(0xFFB8F5D0),
