@@ -1,38 +1,35 @@
-@file:Suppress("unused")
-
 package com.mapex.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// 🌞 Light Theme (mapa moderno)
+// ==========================================
+// MAPEX BRAND COLOR SYSTEM
+// ==========================================
 
-// Primary (azul principal)
-val BluePrimary = Color(0xFF2563EB)
-val BlueLight = Color(0xFF93C5FD)
+// 1. Primary Identity (Backgrounds, Base, Structural)
+val BrandBlack = Color(0xFF000000)
+val BackgroundBlack = Color(0xFF0A0A0A)
+val SurfaceBlack = Color(0xFF141414)
+val SurfaceVariantBlack = Color(0xFF222222)
+val OutlineDark = Color(0xFF333333)
 
-// Secondary (verde)
-val GreenSecondary = Color(0xFF10B981)
-val GreenLight = Color(0xFF6EE7B7)
+val TextWhite = Color(0xFFFFFFFF)
+val TextGray = Color(0xFFA1A1AA)
 
-// Backgrounds
-val BackgroundLight = Color(0xFFF9FAFB)
+// 2. Secondary Identity (Main actions, links, active states)
+val BrandBlue = Color(0xFF0066FF) // Vibrant Blue matching the logo
+val BrandBlueHover = Color(0xFF3385FF)
+val BrandBlueContainer = Color(0xFF003D80)
+
+// 3. Tertiary Identity (Focus, subtle highlights, border details)
+// Used sparingly due to high intensity
+val BrandGreen = Color(0xFF00FF66) // Phosphorescent Green
+val BrandGreenMuted = Color(0xFF00CC52)
+val BrandGreenContainer = Color(0xFF004D1F)
+
+// Light Theme Specific (for contrast and accessibility if needed)
+val BackgroundLight = Color(0xFFF4F4F5)
 val SurfaceLight = Color(0xFFFFFFFF)
-
-// Textos
-val TextPrimary = Color(0xFF111827)
-val TextSecondary = Color(0xFF6B7280)
-
-// Elementos de mapa
-val MarkerRed = Color(0xFFEF4444)
-val CountryHighlight = Color(0x5593C5FD)
-
-// 🌙 Dark Theme (opcional pero recomendado)
-
-val BluePrimaryDark = Color(0xFF3B82F6)
-val GreenSecondaryDark = Color(0xFF34D399)
-
-val BackgroundDark = Color(0xFF111827)
-val SurfaceDark = Color(0xFF1F2937)
-
-val TextPrimaryDark = Color(0xFFF9FAFB)
-val TextSecondaryDark = Color(0xFF9CA3AF)
+val TextBlack = Color(0xFF09090B)
+val TextDarkGray = Color(0xFF3F3F46)
+val OutlineLight = Color(0xFFE4E4E7)
